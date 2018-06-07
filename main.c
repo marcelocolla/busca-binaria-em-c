@@ -10,68 +10,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+// Incluimos as biblioteca abaixo para melhorar a interação com o jogo, com intuito de deixar
+// o jogo menos verboso ao fazer leituras de comandos por exemplo
 // #include <windows.h>
 // #include <conio.h>
-// #include <ncurses.h>
 
 typedef struct user usuario;
-struct user{
+struct user {
     int pt;
     char name[100];
     char lvl;
 };
-char name[100], s;
+char name[100], msg[80], dificuldade;
 
 /*
- * Definições de funccoes
+ * Definições das funções
  */
 int leitura_int (void);
 void print_escolhas (void);
-void escolha_P(int *ini,int *fim);
-int leitura_menu(int *ini,int *fim);
+void escolha_P (int *ini, int *fim);
+int leitura_menu (int *ini,int *fim);
 void fullscreen (void);
 int busca_binaria (int num,char s);
-void telas_ASCII (char *url);
-int second_tela(void);
-void gera_score(int cont);
-void abre_score(void);
+void telas_ASCII (char *url, char *msg);
+int second_tela (void);
+void gera_score (int cont);
+void abre_score (void);
 
-// Leitura de intervalor escolhidos por o jogador
+// Intervalor escolhidos por o jogador
 int intervalo_min (void);
 int intervalo_max (void);
 
 int main(void) {
     char url[] = "start.txt";
-    int y = 0;
+    int playgame = 0;
 
-    fullscreen();
-
+    // fullscreen();
     do {
-        telas_ASCII(url);
+        telas_ASCII(url, "Digite 13 para comeca o game:");
 
-        // y = getch();
-        printf("Digite 13 para comeca o game: ");
-        scanf("%d", &y);
+        // playgame = getch();
+        scanf("%d", &playgame);
 
-        printf("digitou: %d\n", y);
-
-    } while (y != 13);
-
-    printf("Segue o baile!!\n");
+    } while (playgame != 13);
 
     // system("CLS");
-    // system ("clear");
     // second_tela();
 
-    int num = 0, x = 0, ini = 0, fim = 99, i = 0;
+    int num = 0, escolha = 0, ini = 0, fim = 99, busca = 0;
     srand((unsigned) time(NULL));
 
     do {
         // system("CLS");
-        // system("clear");
         fflush(stdin);
         char urld[] = "first.txt";
-        telas_ASCII(urld);
+        telas_ASCII(urld, "Ola, sua missão é descobrir o número aleatório sorteado... Boa Sorte!");
 
         // Leitura do nome do jogador
         printf("\n\n\n\n\n");
@@ -84,8 +78,9 @@ int main(void) {
 
         // Niveis de dificuldade para iniciar o jogo
         print_escolhas();
-        x = leitura_menu(&ini, &fim);
-        if(x == 1) {
+
+        escolha = leitura_menu(&ini, &fim);
+        if(escolha == 1) {
             escolha_P(&ini, &fim);
         }
 
@@ -94,9 +89,12 @@ int main(void) {
         // system("CLS");
         printf("                                                            Sorteando numero aleatorio entre: %d e %d\n", ini, fim);
         printf("                                                                             Valendo!!\n\n");
-        i = busca_binaria(num,s);
+        busca = busca_binaria(num, dificuldade);
+
         num = 0;
-    } while(i != 27);
+
+    } while(busca != 27);
+
     return 0;
 }
 
@@ -107,19 +105,19 @@ int leitura_menu(int *ini, int *fim) {
 
     int menu;
     do {
-        // s = getch();
-        scanf(" %c", &s);
+        // dificuldade = getch();
+        scanf(" %c", &dificuldade);
         menu = 1;
 
-        if (s == 'E' || s == 'e') {
+        if (dificuldade == 'E' || dificuldade == 'e') {
             (*fim) = 100;
-        } else if(s == 'M'|| s == 'm') {
+        } else if(dificuldade == 'M'|| dificuldade == 'm') {
             (*fim) = 1000;
-        } else if(s == 'H' || s == 'h') {
+        } else if(dificuldade == 'H' || dificuldade == 'h') {
             (*fim) = 9999;
-        } else if(s == 'F' || s == 'f') {
+        } else if(dificuldade == 'F' || dificuldade == 'f') {
             (*fim) = 987654321;
-        } else if(s == 'P' || s == 'p') {
+        } else if(dificuldade == 'P' || dificuldade == 'p') {
             return 1;
         } else {
             menu = 0;
@@ -182,7 +180,7 @@ void print_escolhas (void) {
     char ascii_dificuldade[] = "lets.txt";
 
     // system("CLS");
-    telas_ASCII(ascii_dificuldade);
+    telas_ASCII(ascii_dificuldade, "O Seu proximo passo é escolha uma das dificuldade abaixo:");
 
     printf("\n\n\n\n");
     printf("Para EASY digite 'E'\n");
@@ -224,12 +222,12 @@ int leitura_int (void) {
  * Ref .: http://...
  */
 void fullscreen (void) {
-    return;
 
-    keybd_event(VK_MENU  , 0x36, 0, 0);
-    keybd_event(VK_RETURN, 0x1C, 0, 0);
-    keybd_event(VK_RETURN, 0x1C, KEYEVENTF_KEYUP, 0);
-    keybd_event(VK_MENU  , 0x38, KEYEVENTF_KEYUP, 0);
+//    keybd_event(VK_MENU  , 0x36, 0, 0);
+//    keybd_event(VK_RETURN, 0x1C, 0, 0);
+//    keybd_event(VK_RETURN, 0x1C, KEYEVENTF_KEYUP, 0);
+//    keybd_event(VK_MENU  , 0x38, KEYEVENTF_KEYUP, 0);
+
 }
 
 /*
@@ -251,18 +249,18 @@ int busca_binaria (int num, char s) {
         } else if(i == num) {
             // system("CLS");
             char menos[] = "ok.txt";
-            telas_ASCII(menos);
+            telas_ASCII(menos, "UUhuuulll Muito Bommm");
 
             printf("\nParabens!! ACERTOU MISERAVI.\n");
-            printf("\nJogador: ");
+            printf("\n-----------------\nJogador: ");
 
             puts(name);
-            printf("Numero de tentativas: %d\n\n", cont);
+            printf("Numero de tentativas: %d\n-----------------\n\n", cont);
 
             gera_score(cont);
 
             printf("Para novo jogo digite qualquer tecla.\n");
-            printf("Precione Esc para sair.\n\n");
+            printf("Precione ESC para sair.\n\n");
 
             // i = getch();
             scanf("%d", &i);
@@ -279,35 +277,43 @@ int busca_binaria (int num, char s) {
 
 /*
  * Leitura de arquivos de texto com figuras ASCII
+ * @params espera-se receber por parametro um ponteiro de char que é o nome do arquivo
+ * que será feito a leitura e na sequência imprimido na tela da aplicação até chegar ao final do arquivo.
+ * - Tambem esperamos uma mensagem de callback para cada arquivo que esta sendo lido, que será apresentada,
+ * caso não seja possivel fazer a leitura do arquivo.
  */
-void telas_ASCII(char *url) {
+void telas_ASCII(char *url, char *msg) {
     char ch;
 
-    return; // refactor para rodar no unix
-
     FILE *arq;
+
+    // Leitura do arquivo que foi passado por parametro
     arq = fopen(url, "r");
 
     if(arq == NULL) {
-        printf("Erro, nao foi possivel abrir o arquivo\n");
+
+        // Não foi possivel ler o arquivo
+        printf("%s\n", msg);
+
     } else {
         while ((ch = fgetc(arq)) != EOF) {
             putchar(ch);
         }
     }
 
-    fclose(arq); // fechando o arquivo após usar
+    // fechando o arquivo após usar
+    fclose(arq);
 }
 
 /*
- * Method responsavel por mostrar Score dos melhores jogares
+ * Method responsavel por mostrar Score dos melhores jogadores
  */
 int second_tela (void) {
     char pqp[] = "second.txt";
     int x = 0;
 
     do {
-        telas_ASCII(pqp);
+        telas_ASCII(pqp, "msgggg");
         abre_score();
 
         // x = getch();
@@ -339,6 +345,6 @@ void abre_score (void) {
     arq = fopen(arq_score, "a+");
 
     return;
-    fscanf(arq,"%d %[^\n]s", &a.pt, &a.name);
-    printf("%d %s ", a.pt, a.name);
+    // fscanf(arq,"%d %[^\n]s", &a.pt, &a.name);
+    // printf("%d %s ", a.pt, a.name);
 }
