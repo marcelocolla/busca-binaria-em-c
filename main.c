@@ -23,6 +23,7 @@ struct user {
     char lvl;
 };
 char name[100], msg[80], dificuldade;
+int num = 0;
 
 /*
  * Definições das funções
@@ -37,16 +38,20 @@ void telas_ASCII (char *url, char *msg);
 int second_tela (void);
 void gera_score (int cont);
 void abre_score (void);
+void init_resolve_game (int a, int b);
+int resolve_game (int ini, int fim);
+int escolhas[150];
 
 // Intervalor escolhidos por o jogador
 int intervalo_min (void);
 int intervalo_max (void);
+int jogadas = 0;
 
 int main(void) {
     char url[] = "start.txt";
-    int playgame = 0;
+    int playgame = 0, menu = 0;
 
-    // fullscreen();
+    fullscreen();
     do {
         telas_ASCII(url, "Digite 13 para comeca o game:");
 
@@ -58,7 +63,7 @@ int main(void) {
     // system("CLS");
     // second_tela();
 
-    int num = 0, escolha = 0, ini = 0, fim = 99, busca = 0;
+    int escolha = 0, ini = 0, fim = 99, busca = 0;
     srand((unsigned) time(NULL));
 
     do {
@@ -84,18 +89,55 @@ int main(void) {
             escolha_P(&ini, &fim);
         }
 
-        num = rand() % (fim-ini+1) + ini;
+        num = rand() << 15 + rand() % (fim-ini+1) + ini;
 
         // system("CLS");
         printf("                                                            Sorteando numero aleatorio entre: %d e %d\n", ini, fim);
         printf("                                                                             Valendo!!\n\n");
-        busca = busca_binaria(num, dificuldade);
+
+        printf("Olá %s, podemos iniciar o game:\n", name);
+        printf("Precione qualquer tecla para jogar agora\nOu Digite 0 para que a gente resolva por você\n");
+        scanf("%d", &menu);
+
+        if (menu == 0) {
+            init_resolve_game(ini, fim);
+            busca = 27;
+        } else {
+            busca = busca_binaria(num, dificuldade);
+        }
 
         num = 0;
 
     } while(busca != 27);
 
     return 0;
+}
+
+void init_resolve_game (int a, int b) {
+    int resolve = resolve_game(a, b);
+
+    printf("\n---------------------\n");
+    printf("FIM DE JOGO valor [%d] encontrado!\nFORAM APENAS [%d] jogadas para encontrar.\n", resolve, jogadas);
+    printf("---------------------\n\n");
+}
+
+int resolve_game (int ini, int fim) {
+    int maior = ini > fim ? ini : fim,
+        menor = ini > fim ? fim : ini,
+        metade = ((maior - menor) / 2) + menor;
+
+    jogadas += 1;
+    printf("Valor Sorteado [%d], já foram [%d] jogadas!\n", metade, jogadas);
+
+    if (metade == num) {
+        return num;
+    } else if (metade > num) {
+        fim = metade;
+    } else {
+        ini = metade;
+    }
+
+    return resolve_game(ini, fim);
 }
 
 int leitura_menu(int *ini, int *fim) {
